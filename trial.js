@@ -1,12 +1,9 @@
 "use strict"
 
-const a=[1,2,3];
-const b=[2,3,4];
-const newElements = [];
-for (const number of b){
-    if (a.indexOf(number) === -1)[
-        newElements.push(number)
-    ]
-}
+let x = [1,2,3];
+let y = [-1,-2,-3]
+let z = [...x]
 
-console.log(a.every((x) => x > 6))
+console.log(x,y, z)
+z.push
+
