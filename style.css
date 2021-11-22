@@ -1,0 +1,51 @@
+body{
+    font-family: 'tetris', sans-serif;
+    text-align: center;
+}
+
+#red{
+    color: red;
+}
+
+#orange{
+    color: orange;
+}
+
+#yellow{
+    color: yellow;
+}
+
+#green{
+    color: green;
+}
+
+#blue{
+    color: blue;
+}
+
+#purple{
+    color: purple;
+}
+
+h3{
+    position: relative;
+    right: 50px;
+}
+
+#game-area{
+    position: relative;
+    display: flex;
+}
+
+#board{
+    justify-content: center;
+    position: relative;
+    margin: auto;
+}
+
+.board-row{
+    min-width: none;
+
+    display: flex;
+    margin: auto;
+}
