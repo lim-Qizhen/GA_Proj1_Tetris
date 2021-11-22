@@ -87,21 +87,13 @@ let currentTetro = allTetros[Math.floor(Math.random() * allTetros.length)];
 
 //game process (one round)
 function oneBlock() {
+  console.log("One block")
   blockAppear(); //includes checking
   //check if tile can fall and let tile fall
   const tileDrop = setInterval(stopDrop, 100)
-  // function stopDrop(){
-  //   if (Object.values(currentTetro)[0][0][3] >= 190){
-  //     clearInterval(tileDrop);
-  //     currentTetro = nextTetro;
-  //     nextTetro = allTetros[Math.floor(Math.random() * allTetros.length)];
-  //   } else{
-  //     tileDropping()
-  //   }
-  // }
   let stopDropping = Object.values(currentTetro)[0][0][3] >= 190 || checkBlockFall();
 
-  console.log(stopDropping);
+  //console.log(stopDropping);
   function stopDrop(){
     if (stopDropping){
       clearInterval(tileDrop);
@@ -110,13 +102,13 @@ function oneBlock() {
     } else{
       tileDropping()
       stopDropping = Object.values(currentTetro)[0][0][3] >= 190 || checkBlockFall();
-      console.log(stopDropping)
+      //console.log(stopDropping)
     }
   }
-  showNextTetro(nextTetro);
+  showNextTetro(nextTetro)
 }
 
-for(let i = 1; i <= 4; i++){
+for(let i = 1; i <= 2; i++){
   oneBlock();
 }
 
@@ -125,6 +117,7 @@ function blockAppear() {
   let indices = squaresToChange[0][0];
   //drawing
   if (checkBlockAppear()) {
+    console.log("appeared!")
     //checking if block has space to start
     for (const number of indices) {
       //getting indices of squares to change
@@ -139,12 +132,9 @@ function checkBlockAppear() {
   const squaresToChange = Object.values(currentTetro);
   const indices = squaresToChange[0][0];
   if (
-    indices.some((x) => gameBoardSquares[x].style.backgroundColor !== "black")
+    indices.every((x) => gameBoardSquares[x].style.backgroundColor === "black")
   ) {
-    return false;
-  } else {
-    return true
-    console.log("You have lost the game ):");
+    return true;
   }
 }
 
@@ -152,10 +142,8 @@ function tileDropping() {
     const squaresToChange = Object.values(currentTetro);
     const indices = squaresToChange[0][0];
     if(checkBlockFall()){
-      console.log("No space to fall")
       return;
     } else{
-      console.log("falling")
         //remove current colouring
         for (const number of indices) {
             const toChange = gameBoardSquares[number];
@@ -173,37 +161,12 @@ function tileDropping() {
       }
 }
 
-// function blockFall() {
-//   const squaresToChange = Object.values(currentTetro);
-//   console.log("run");
-//   let indices = squaresToChange[0][0];
-  // if (indices[3] < 190) {
-  //   for (let i = indices.length - 1; i >= 0; i--) {
-  //     if (gameBoardSquares[indices[i] + 10].style.backgroundColor === "black") {
-  //       gameBoardSquares[indices[i]].style.backgroundColor = "black";
-  //       gameBoardSquares[indices[i] + 10].style.backgroundColor =
-  //         Object.keys(currentTetro);
-  //     } else {
-  //       for (const number of indices) {
-  //         gameBoardSquares[number].style.backgroundColor =
-  //           Object.keys(currentTetro);
-  //       }
-  //       currentTetro = nextTetro;
-  //     }
-  //   }
-  //   for (let i = 0; i <= indices.length - 1; i++) {
-  //     indices[i] += 10;
-  //   }
-  //   Object.values(currentTetro)[0][0] = indices;
-  // }
-// }
-
 function checkBlockFall(){ //return true if can't fall
   const squaresToChange = Object.values(currentTetro);
   const indices = squaresToChange[0][0];
   const nextPosition = [];
   for (let i = 0; i<indices.length; i++){
-    nextPosition.push(indices[i] + 10);
+      nextPosition.push(indices[i] + 10);
   }
   const newSpots = [];
   for (const number of nextPosition){
@@ -226,6 +189,31 @@ function showNextTetro(next) {
 // function resetNextTile(){
 //     const resetNextBackground = document.querySelectorAll("next-board");
 //     for(square of resetNextBackground){
-//         square.style.backgroundColor = "white";
+//           square.style.backgroundColor = "white";
+//       }
+// }
+    
+// function blockFall() {
+//   const squaresToChange = Object.values(currentTetro);
+//   console.log("run");
+//   let indices = squaresToChange[0][0];
+//   if (indices[3] < 190) {
+//     for (let i = indices.length - 1; i >= 0; i--) {
+//       if (gameBoardSquares[indices[i] + 10].style.backgroundColor === "black") {
+//         gameBoardSquares[indices[i]].style.backgroundColor = "black";
+//         gameBoardSquares[indices[i] + 10].style.backgroundColor =
+//           Object.keys(currentTetro);
+//       } else {
+//         for (const number of indices) {
+//           gameBoardSquares[number].style.backgroundColor =
+//             Object.keys(currentTetro);
+//         }
+//         currentTetro = nextTetro;
+//       }
 //     }
+//     for (let i = 0; i <= indices.length - 1; i++) {
+//       indices[i] += 10;
+//     }
+//     Object.values(currentTetro)[0][0] = indices;
+//   }
 // }

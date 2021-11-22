@@ -9,4 +9,4 @@ for (const number of b){
     ]
 }
 
-console.log(a.some((x) => x > 6))
+console.log(a.every((x) => x > 6))
