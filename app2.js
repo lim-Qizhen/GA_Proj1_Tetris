@@ -24,11 +24,14 @@ function newBoard() {
     }
     fullBoard.append(boardRow);
   }
-  document.querySelector("#current-score").innerHTML = "0";
 }
 newBoard();
 //collecting all squares of gameboard to change colour
 const gameBoardSquares = document.querySelectorAll(".board-square");
+
+//initiating score
+let score = 0;
+document.querySelector("#current-score").innerHTML = `${score}`;
 
 //nextBoard
 function nextTetroBoard() {
@@ -54,7 +57,6 @@ function nextTetroBoard() {
     }
     nextBoard.append(boardRow);
   }
-  document.querySelector("#current-score").innerHTML = "0";
 }
 nextTetroBoard();
 const nextBoardSquares = document.querySelectorAll(".next-board-square");
@@ -100,6 +102,7 @@ function oneFallingBlock() {
         JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
       );
       resetNextTile();
+      countScore();
       console.log("Block");
       oneFallingBlock();
     } else {
@@ -253,6 +256,33 @@ function tetroMove(direction) {
         Object.keys(currentTetro))
   );
   console.log(Object.values(currentTetro)[0][0]);
+}
+
+function countScore(){
+  for (let i = 0; i<=19; i++){
+    let counter = 0;
+    for(let j = 0; j <= 9; j++){
+      if(gameBoardSquares[i*10+j].style.backgroundColor != "black"){
+        counter ++;
+      }
+    }
+    if (counter === 10){ //row i is filled
+      score += 10;
+      document.querySelector("#current-score").innerHTML = `${score}`;
+      //remove complete line
+      for (let k = 0; k<=9; k++){
+        gameBoardSquares[i*10+k].style.backgroundColor = "black"
+      }
+      //drop above lines
+      for(let l = i*10-1; l>=0; l--){
+        if (gameBoardSquares[l].style.backgroundColor !== "black"){
+          console.log(l)
+          gameBoardSquares[l+10].style.backgroundColor = gameBoardSquares[l].style.backgroundColor;
+          gameBoardSquares[l].style.backgroundColor = "black";
+        }
+      }
+    }
+  }
 }
 
 //event Listeners
