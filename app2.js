@@ -29,10 +29,6 @@ newBoard();
 //collecting all squares of gameboard to change colour
 const gameBoardSquares = document.querySelectorAll(".board-square");
 
-//initiating score
-let score = 0;
-document.querySelector("#current-score").innerHTML = `${score}`;
-
 //nextBoard
 function nextTetroBoard() {
   const nextBoard = document.createElement("div");
@@ -84,16 +80,33 @@ const horizontalStraightTetro = {
 };
 const allTetros = [squareTetro, verticalStraightTetro, horizontalStraightTetro];
 
+//initiating game
+let score = 0;
+document.querySelector("#current-score").innerHTML = `${score}`;
 let nextTetro = JSON.parse(JSON.stringify(verticalStraightTetro));
 let currentTetro = JSON.parse(JSON.stringify(squareTetro));
+let timer = 70;
+let lines = 0;
+document.querySelector("#current-lines").innerHTML = `${lines}`;
+let level = 0;
+document.querySelector("#current-level").innerHTML = `${level}`;
+
+const possibleLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+const linesRequired = [10]; // element 1 is lines required to be level 1
+for (let i = 1; i < possibleLevels.length; i++) {
+  linesRequired.push(
+    linesRequired[linesRequired.length - 1] + possibleLevels[i] * 10
+  );
+}
 
 function oneFallingBlock() {
   //initiate the game starting
   printTetro(); //includes checking
   printNextTetro();
+  showFurthest();
 
   //game
-  const tileDropTimer = setInterval(tetroFreeze, 100);
+  const tileDropTimer = setInterval(tetroFreeze, timer);
   function tetroFreeze() {
     if (tetroStop()) {
       clearInterval(tileDropTimer);
@@ -103,6 +116,8 @@ function oneFallingBlock() {
       );
       resetNextTile();
       countScore();
+      checkLevel();
+      // timer = 1000 - level * 50;
       console.log("Block");
       oneFallingBlock();
     } else {
@@ -124,7 +139,7 @@ function oneFallingBlock() {
       );
     }
   }
-};
+}
 
 function printTetro() {
   const positions = [...Object.values(currentTetro)[0][0]];
@@ -134,7 +149,7 @@ function printTetro() {
     )
   ) {
     window.alert("GAME OVER. \nRESTART GAME.");
-    location.reload();
+    location.reload(); //refreshes the html and resets variables
     return;
   } else {
     console.log("okay!");
@@ -181,12 +196,12 @@ function printNextTetro() {
   );
 }
 
-function resetNextTile(){
-    const resetNextBackground = document.querySelectorAll(".next-board-square");
-    for(const grid of resetNextBackground){
-      grid.style.backgroundColor = "white";
-      grid.style.border = "0.5px solid white"
-    }
+function resetNextTile() {
+  const resetNextBackground = document.querySelectorAll(".next-board-square");
+  for (const grid of resetNextBackground) {
+    grid.style.backgroundColor = "white";
+    grid.style.border = "0.5px solid white";
+  }
 }
 
 function checkSidePositions(moveSpaces) {
@@ -217,12 +232,12 @@ function tetroMove(direction) {
   if (direction === "left") {
     //checking if alr at end
     if (positions.some((position) => position % 10 === 0)) {
-      //at left end
+      //at left end cannot move alr
       return;
     } else {
       //check if can shift left
       shift = -1;
-      if (checkSidePositions(shift)){
+      if (checkSidePositions(shift)) {
         return;
       }
     }
@@ -232,7 +247,7 @@ function tetroMove(direction) {
       return;
     } else {
       shift = 1;
-      if (checkSidePositions(shift)){
+      if (checkSidePositions(shift)) {
         return;
       }
     }
@@ -242,42 +257,43 @@ function tetroMove(direction) {
   Object.values(currentTetro)[0][0].forEach(
     (position) => (gameBoardSquares[position].style.backgroundColor = "black")
   );
-  console.log(Object.values(currentTetro)[0][0]);
-  //lower tetro
+  //move tetro
   for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
     Object.values(currentTetro)[0][0][i] =
       Object.values(currentTetro)[0][0][i] + shift;
   }
-  console.log(Object.values(currentTetro)[0][0]);
   //recolour
+  showFurthest();
   Object.values(currentTetro)[0][0].forEach(
     (position) =>
       (gameBoardSquares[position].style.backgroundColor =
         Object.keys(currentTetro))
   );
-  console.log(Object.values(currentTetro)[0][0]);
 }
 
-function countScore(){
-  for (let i = 0; i<=19; i++){
+function countScore() {
+  for (let i = 0; i <= 19; i++) {
     let counter = 0;
-    for(let j = 0; j <= 9; j++){
-      if(gameBoardSquares[i*10+j].style.backgroundColor != "black"){
-        counter ++;
+    for (let j = 0; j <= 9; j++) {
+      if (gameBoardSquares[i * 10 + j].style.backgroundColor != "black") {
+        counter++;
       }
     }
-    if (counter === 10){ //row i is filled
+    if (counter === 10) {
+      //row i is filled
       score += 10;
       document.querySelector("#current-score").innerHTML = `${score}`;
+      lines++;
+      document.querySelector("#current-lines").innerHTML = `${lines}`;
       //remove complete line
-      for (let k = 0; k<=9; k++){
-        gameBoardSquares[i*10+k].style.backgroundColor = "black"
+      for (let k = 0; k <= 9; k++) {
+        gameBoardSquares[i * 10 + k].style.backgroundColor = "black";
       }
       //drop above lines
-      for(let l = i*10-1; l>=0; l--){
-        if (gameBoardSquares[l].style.backgroundColor !== "black"){
-          console.log(l)
-          gameBoardSquares[l+10].style.backgroundColor = gameBoardSquares[l].style.backgroundColor;
+      for (let l = i * 10 - 1; l >= 0; l--) {
+        if (gameBoardSquares[l].style.backgroundColor !== "black") {
+          gameBoardSquares[l + 10].style.backgroundColor =
+            gameBoardSquares[l].style.backgroundColor;
           gameBoardSquares[l].style.backgroundColor = "black";
         }
       }
@@ -285,23 +301,98 @@ function countScore(){
   }
 }
 
+function checkLevel() {
+  for (let i = linesRequired.length - 1; i >= 0; i--) {
+    if (lines >= linesRequired[i]) {
+      level = possibleLevels[i];
+      document.querySelector("#current-level").innerHTML = `${level}`;
+      return;
+    }
+  }
+}
+
+function showFurthest() {
+  let positions = [...Object.values(currentTetro)[0][0]];
+  for (let i = 19; i >= 1; i--) {
+    //create furthest possible block
+    let lowestPossiblePosition = [];
+    for (let j = 0; j < positions.length; j++) {
+      lowestPossiblePosition.push(positions[j] + i * 10);
+    }
+    //check if furthest possible block is within board
+    if (lowestPossiblePosition.every((position) => position < 200)) {
+      if (
+        lowestPossiblePosition.every(
+          (position) =>
+            gameBoardSquares[position].style.backgroundColor === "black"
+        )
+      ) {
+        //reset border colours
+        for (let i = 0; i <= 199; i++) {
+          gameBoardSquares[i].style.border = "0.5px solid grey";
+        }
+        lowestPossiblePosition.forEach(
+          (position) =>
+            (gameBoardSquares[position].style.border = "0.5px solid blue")
+        );
+        return;
+      }
+    }
+  }
+}
+
+function quickDrop() {
+  let positions = [...Object.values(currentTetro)[0][0]];
+  for (let i = 19; i >= 1; i--) {
+    //create furthest possible block
+    let lowestPossiblePosition = [];
+    for (let j = 0; j < positions.length; j++) {
+      lowestPossiblePosition.push(positions[j] + i * 10);
+    }
+    //check if furthest possible block is within board
+    if (lowestPossiblePosition.every((position) => position < 200)) {
+      if (
+        lowestPossiblePosition.every(
+          (position) =>
+            gameBoardSquares[position].style.backgroundColor === "black"
+        )
+      ) {
+        //reset border colours
+        for (const currentPosition of positions){
+          gameBoardSquares[currentPosition].style.backgroundColor = "black";
+        }
+        Object.values(currentTetro)[0][0] = [...lowestPossiblePosition];
+        return;
+      }
+    }
+  }
+}
+
 //event Listeners
 //keyboard controls
-document.onkeydown = function (event) {
-  switch (event.keyCode) {
+document.addEventListener("keydown", function (e) {
+  switch (e.keyCode) {
     case 37: //left arrow
       tetroMove("left");
       break;
     case 39: //right arrow
       tetroMove("right");
       break;
-    case 40:
-      console.log("Down key is pressed.");
-      break;
+    // case 40: //down arrow
+    //   timer = 50;
+    //   break;
     case 32: //space bar
       console.log("Space bar is pressed.");
+      quickDrop();
       break;
   }
-};
+});
 
-document.querySelector("#start-button").addEventListener("click", oneFallingBlock);
+// document.addEventListener("keypress", function(e){
+//   switch(e.keyCode){
+//     case 40: console.log("down")}
+// })
+
+document
+  .querySelector("#start-button")
+  .addEventListener("click", oneFallingBlock);
