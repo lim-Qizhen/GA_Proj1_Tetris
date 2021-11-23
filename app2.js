@@ -83,69 +83,58 @@ const horizontalStraightTetro = {
 const allTetros = [squareTetro, verticalStraightTetro, horizontalStraightTetro];
 
 let nextTetro = JSON.parse(JSON.stringify(verticalStraightTetro));
-// let currentTetro = { ...squareTetro }; //this doesn't work ):
 let currentTetro = JSON.parse(JSON.stringify(squareTetro));
 
-
-let counter = 1;
-
 function oneFallingBlock() {
+  //initiate the game starting
   printTetro(); //includes checking
   printNextTetro();
 
-
-
-
-  while (counter < 3){
-    
-    const tileDropTimer = setInterval(tetroFreeze, 500);
-    function tetroFreeze() {
-      if (tetroStop()) { 
-        clearInterval(tileDropTimer);
-        currentTetro = JSON.parse(JSON.stringify(nextTetro));
-        nextTetro = JSON.parse(JSON.stringify(allTetros[Math.floor(Math.random()*allTetros.length)]));
-        console.log("Block");
-      } else { //move block down visually
-        //uncolour
-        Object.values(currentTetro)[0][0].forEach(
-          (position) => (gameBoardSquares[position].style.backgroundColor = "black")
-        );
-        console.log(Object.values(currentTetro)[0][0])
-        //lower tetro
-        for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
-          Object.values(currentTetro)[0][0][i] += 10;
-        }
-        console.log(Object.values(currentTetro)[0][0])
-        //recolour
-        Object.values(currentTetro)[0][0].forEach(
-          (position) =>
-            (gameBoardSquares[position].style.backgroundColor =
-              Object.keys(currentTetro))
-        );
-        console.log(Object.values(currentTetro)[0][0])
+  //game
+  const tileDropTimer = setInterval(tetroFreeze, 100);
+  function tetroFreeze() {
+    if (tetroStop()) {
+      clearInterval(tileDropTimer);
+      currentTetro = JSON.parse(JSON.stringify(nextTetro));
+      nextTetro = JSON.parse(
+        JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
+      );
+      resetNextTile();
+      console.log("Block");
+      oneFallingBlock();
+    } else {
+      //move block down visually
+      //uncolour
+      Object.values(currentTetro)[0][0].forEach(
+        (position) =>
+          (gameBoardSquares[position].style.backgroundColor = "black")
+      );
+      //lower tetro
+      for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
+        Object.values(currentTetro)[0][0][i] += 10;
       }
+      //recolour
+      Object.values(currentTetro)[0][0].forEach(
+        (position) =>
+          (gameBoardSquares[position].style.backgroundColor =
+            Object.keys(currentTetro))
+      );
     }
-    
-
-    counter++
   }
-}
-
-oneFallingBlock()
+};
 
 function printTetro() {
   const positions = [...Object.values(currentTetro)[0][0]];
-  console.log(positions)
   if (
     positions.some(
       (position) => gameBoardSquares[position].style.backgroundColor !== "black"
     )
   ) {
-    console.log()
-    console.log("the game is over");
+    window.alert("GAME OVER. \nRESTART GAME.");
+    location.reload();
     return;
   } else {
-    console.log("okay!")
+    console.log("okay!");
     positions.forEach(
       (position) =>
         (gameBoardSquares[position].style.backgroundColor =
@@ -154,26 +143,6 @@ function printTetro() {
   }
 }
 
-// function tetroDrop() {
-//   //uncolour
-//   Object.values(currentTetro)[0][0].forEach(
-//     (position) => (gameBoardSquares[position].style.backgroundColor = "black")
-//   );
-//   console.log(Object.values(currentTetro)[0][0])
-//   //lower tetro
-//   for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
-//     Object.values(currentTetro)[0][0][i] += 10;
-//   }
-//   console.log(Object.values(currentTetro)[0][0])
-//   //recolour
-//   Object.values(currentTetro)[0][0].forEach(
-//     (position) =>
-//       (gameBoardSquares[position].style.backgroundColor =
-//         Object.keys(currentTetro))
-//   );
-//   console.log(Object.values(currentTetro)[0][0])
-// }
-
 function tetroStop() {
   let positions = [...Object.values(currentTetro)[0][0]];
   //generating next drop zone to check
@@ -181,9 +150,6 @@ function tetroStop() {
   for (let i = 0; i < positions.length; i++) {
     nextPositions.push(positions[i] + 10);
   }
-  console.log(positions);
-  console.log(Object.values(currentTetro)[0][0])
-  console.log(nextPositions);
   //finding new Spots
   const newSpots = [];
   for (const nextSpot of nextPositions) {
@@ -191,28 +157,121 @@ function tetroStop() {
       newSpots.push(nextSpot);
     }
   }
-  console.log(newSpots);
   if (nextPositions[3] >= 200) {
     //reached the end (true indicates stop)
     return true;
   }
-  console.log(
-    newSpots.some((position) => gameBoardSquares[position].style.backgroundColor !== "black")
-  );
-  return newSpots.some((position) => gameBoardSquares[position].style.backgroundColor != "black"); //true indicates stop
+  return newSpots.some(
+    (position) => gameBoardSquares[position].style.backgroundColor != "black"
+  ); //true indicates stop
 }
 
 function printNextTetro() {
-  let positions = [...Object.values(currentTetro)[0][1]];
+  let positions = [...Object.values(nextTetro)[0][1]];
   positions.forEach(
     (position) =>
       (nextBoardSquares[position].style.backgroundColor =
-        Object.keys(currentTetro))
+        Object.keys(nextTetro))
   );
   positions.forEach(
     (position) => (nextBoardSquares[position].style.border = "0.5px solid grey")
   );
 }
 
-function moveLeft(){
+function resetNextTile(){
+    const resetNextBackground = document.querySelectorAll(".next-board-square");
+    for(const grid of resetNextBackground){
+      grid.style.backgroundColor = "white";
+      grid.style.border = "0.5px solid white"
+    }
 }
+
+function checkSidePositions(moveSpaces) {
+  let currentPositions = [...Object.values(currentTetro)[0][0]];
+  //generating next drop zone to check
+  const nextPositions = [];
+  for (let i = 0; i < currentPositions.length; i++) {
+    nextPositions.push(currentPositions[i] + moveSpaces);
+  }
+  //finding new Spots
+  const newSpots = [];
+  for (const nextSpot of nextPositions) {
+    if (currentPositions.indexOf(nextSpot) === -1) {
+      newSpots.push(nextSpot);
+    }
+  }
+
+  for (let i = 0; i < newSpots.length; i++) {
+    if (gameBoardSquares[newSpots[i]].style.backgroundColor !== "black") {
+      return true;
+    }
+  }
+}
+
+function tetroMove(direction) {
+  let positions = [...Object.values(currentTetro)[0][0]]; //current position
+  let shift = 0; //initiating shift (-1 or +1)
+  if (direction === "left") {
+    //checking if alr at end
+    if (positions.some((position) => position % 10 === 0)) {
+      //at left end
+      return;
+    } else {
+      //check if can shift left
+      shift = -1;
+      if (checkSidePositions(shift)){
+        return;
+      }
+    }
+  } else if (direction === "right") {
+    if (positions.some((position) => position % 10 === 9)) {
+      //at left end
+      return;
+    } else {
+      shift = 1;
+      if (checkSidePositions(shift)){
+        return;
+      }
+    }
+  }
+
+  //uncolour
+  Object.values(currentTetro)[0][0].forEach(
+    (position) => (gameBoardSquares[position].style.backgroundColor = "black")
+  );
+  console.log(Object.values(currentTetro)[0][0]);
+  //lower tetro
+  for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
+    Object.values(currentTetro)[0][0][i] =
+      Object.values(currentTetro)[0][0][i] + shift;
+  }
+  console.log(Object.values(currentTetro)[0][0]);
+  //recolour
+  Object.values(currentTetro)[0][0].forEach(
+    (position) =>
+      (gameBoardSquares[position].style.backgroundColor =
+        Object.keys(currentTetro))
+  );
+  console.log(Object.values(currentTetro)[0][0]);
+}
+
+//event Listeners
+//keyboard controls
+document.onkeydown = function (event) {
+  switch (event.keyCode) {
+    case 37: //left arrow
+      tetroMove("left");
+      break;
+    case 39: //right arrow
+      tetroMove("right");
+      break;
+    case 40:
+      console.log("Down key is pressed.");
+      break;
+    case 32: //space bar
+      console.log("Space bar is pressed.");
+      break;
+  }
+};
+
+document.querySelector("#start-button").addEventListener("click", oneFallingBlock);
