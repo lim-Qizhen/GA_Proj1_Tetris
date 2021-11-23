@@ -5,5 +5,6 @@ let y = [-1,-2,-3]
 let z = [...x]
 
 console.log(x,y, z)
-z.push
 
+console.log(0/10)
+console.log(9%10)

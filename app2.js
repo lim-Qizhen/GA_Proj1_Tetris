@@ -82,45 +82,70 @@ const horizontalStraightTetro = {
 };
 const allTetros = [squareTetro, verticalStraightTetro, horizontalStraightTetro];
 
-let nextTetro = { ...verticalStraightTetro };
-// let currentTetro = { ...squareTetro };
-let currentTetro = Object.assign({}, squareTetro);
+let nextTetro = JSON.parse(JSON.stringify(verticalStraightTetro));
+// let currentTetro = { ...squareTetro }; //this doesn't work ):
+let currentTetro = JSON.parse(JSON.stringify(squareTetro));
 
-console.log(Object.values(currentTetro)[0][0]);
-console.log(Object.values(squareTetro)[0][0]);
 
-for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
-  Object.values(currentTetro)[0][0][i]++;
-}
-
-console.log(Object.values(currentTetro)[0][0]);
-console.log(Object.values(squareTetro)[0][0]);
+let counter = 1;
 
 function oneFallingBlock() {
   printTetro(); //includes checking
   printNextTetro();
-  const tileDropTimer = setInterval(tetroFreeze, 100);
-  function tetroFreeze() {
-    if (tetroStop()) {
-      clearInterval(tileDropTimer);
-    } else {
-      tetroDrop();
+
+
+
+
+  while (counter < 3){
+    
+    const tileDropTimer = setInterval(tetroFreeze, 500);
+    function tetroFreeze() {
+      if (tetroStop()) { 
+        clearInterval(tileDropTimer);
+        currentTetro = JSON.parse(JSON.stringify(nextTetro));
+        nextTetro = JSON.parse(JSON.stringify(allTetros[Math.floor(Math.random()*allTetros.length)]));
+        console.log("Block");
+      } else { //move block down visually
+        //uncolour
+        Object.values(currentTetro)[0][0].forEach(
+          (position) => (gameBoardSquares[position].style.backgroundColor = "black")
+        );
+        console.log(Object.values(currentTetro)[0][0])
+        //lower tetro
+        for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
+          Object.values(currentTetro)[0][0][i] += 10;
+        }
+        console.log(Object.values(currentTetro)[0][0])
+        //recolour
+        Object.values(currentTetro)[0][0].forEach(
+          (position) =>
+            (gameBoardSquares[position].style.backgroundColor =
+              Object.keys(currentTetro))
+        );
+        console.log(Object.values(currentTetro)[0][0])
+      }
     }
+    
+
+    counter++
   }
 }
 
-oneFallingBlock();
+oneFallingBlock()
 
 function printTetro() {
-  let positions = [...Object.values(currentTetro)[0][0]];
+  const positions = [...Object.values(currentTetro)[0][0]];
+  console.log(positions)
   if (
     positions.some(
       (position) => gameBoardSquares[position].style.backgroundColor !== "black"
     )
   ) {
+    console.log()
     console.log("the game is over");
     return;
   } else {
+    console.log("okay!")
     positions.forEach(
       (position) =>
         (gameBoardSquares[position].style.backgroundColor =
@@ -129,50 +154,56 @@ function printTetro() {
   }
 }
 
-function tetroDrop() {
-  // let positions = [...Object.values(currentTetro)[0][0]];
-  //uncolour
-  Object.values(currentTetro)[0][0].forEach(
-    (position) => (gameBoardSquares[position].style.backgroundColor = "black")
-  );
-  //lower tetro
-  for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
-    Object.values(currentTetro)[0][0][i] += 10;
-  }
-  //recolour
-  Object.values(currentTetro)[0][0].forEach(
-    (position) =>
-      (gameBoardSquares[position].style.backgroundColor =
-        Object.keys(currentTetro))
-  );
-  console.log(Object.values(squareTetro)[0][0]);
-}
+// function tetroDrop() {
+//   //uncolour
+//   Object.values(currentTetro)[0][0].forEach(
+//     (position) => (gameBoardSquares[position].style.backgroundColor = "black")
+//   );
+//   console.log(Object.values(currentTetro)[0][0])
+//   //lower tetro
+//   for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
+//     Object.values(currentTetro)[0][0][i] += 10;
+//   }
+//   console.log(Object.values(currentTetro)[0][0])
+//   //recolour
+//   Object.values(currentTetro)[0][0].forEach(
+//     (position) =>
+//       (gameBoardSquares[position].style.backgroundColor =
+//         Object.keys(currentTetro))
+//   );
+//   console.log(Object.values(currentTetro)[0][0])
+// }
 
 function tetroStop() {
   let positions = [...Object.values(currentTetro)[0][0]];
   //generating next drop zone to check
   const nextPositions = [];
   for (let i = 0; i < positions.length; i++) {
-    nextPositions.push((positions[i] += 10));
+    nextPositions.push(positions[i] + 10);
   }
+  console.log(positions);
+  console.log(Object.values(currentTetro)[0][0])
   console.log(nextPositions);
   //finding new Spots
   const newSpots = [];
   for (const nextSpot of nextPositions) {
-    if (nextPositions.indexOf(nextSpot) === -1) {
+    if (positions.indexOf(nextSpot) === -1) {
       newSpots.push(nextSpot);
     }
   }
+  console.log(newSpots);
   if (nextPositions[3] >= 200) {
     //reached the end (true indicates stop)
     return true;
   }
-  return newSpots.some((position) => gameBoardSquares[position] != "black"); //true indicates stop
+  console.log(
+    newSpots.some((position) => gameBoardSquares[position].style.backgroundColor !== "black")
+  );
+  return newSpots.some((position) => gameBoardSquares[position].style.backgroundColor != "black"); //true indicates stop
 }
 
 function printNextTetro() {
   let positions = [...Object.values(currentTetro)[0][1]];
-  console.log(positions);
   positions.forEach(
     (position) =>
       (nextBoardSquares[position].style.backgroundColor =
@@ -181,4 +212,7 @@ function printNextTetro() {
   positions.forEach(
     (position) => (nextBoardSquares[position].style.border = "0.5px solid grey")
   );
+}
+
+function moveLeft(){
 }
