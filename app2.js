@@ -72,7 +72,7 @@ const verticalStraightTetro = {
     [0, 4, 8, 12],
   ],
 };
-//horizontal sraight block
+//horizontal straight block
 const horizontalStraightTetro = {
   cyan: [
     [13, 14, 15, 16],

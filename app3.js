@@ -19,8 +19,7 @@ function newBoard() {
       square.style.backgroundColor = "black";
       square.innerText = `${(i - 1) * 10 + j - 1}`;
       square.setAttribute("id", `square-${(i - 1) * 10 + j - 1}`);
-      square.style.fontSize = "10px";
-      square.style.color = "white"
+      square.style.fontSize = 0;
       boardRow.append(square);
     }
     fullBoard.append(boardRow);
@@ -50,6 +49,7 @@ function nextTetroBoard() {
       square.style.backgroundColor = "white";
       //   square.innerText = `${(i - 1) * 10 + j - 1}`;
       square.style.fontSize = "10px";
+      square.style.border = "0.5px solid white"
       boardRow.append(square);
     }
     nextBoard.append(boardRow);
@@ -68,15 +68,9 @@ const squareTetro = {
   ],
   nextDisplay: [1,2,5,6]
 };
-//vertical straight block
-const verticalStraightTetro = {
-  cyan: [
-    [5, 15, 25, 35],
-    [0, 4, 8, 12],
-  ],
-};
-//horizontal sraight block
-const horizontalStraightTetro = {
+
+//sraight block
+const straightTetro = {
   cyan: [
     [13, 14, 15, 16],
     [5,15,25,35],
@@ -85,7 +79,62 @@ const horizontalStraightTetro = {
   ],
   nextDisplay: [0,1,2,3],
 };
-const allTetros = [squareTetro, horizontalStraightTetro];
+
+//reverse L
+const reverseLTetro = {
+    blue: [
+        [3,13,14,15],
+        [4,5,14,24],
+        [13,14,15,25],
+        [4,14,23,24]
+    ],
+    nextDisplay: [0,4,5,6],
+}
+
+//L block
+const lTetro = {
+    orange: [
+        [5,13,14,15],
+        [4,14,24,25],
+        [13,14,15,23],
+        [3,4,14,24]
+    ],
+    nextDisplay: [3,5,6,7],
+}
+
+//t block
+const tTetro = {
+    blueviolet: [
+        [4,13,14,15],
+        [4,14,15,24],
+        [13,14,15,24],
+        [4,13,14,24]
+    ],
+    nextDisplay: [1,4,5,6],
+}
+
+//z block
+const zTetro = {
+    red: [
+        [3,4,14,15],
+        [5,14,15,24],
+        [13,14,24,25],
+        [4,13,14,23]
+    ],
+    nextDisplay: [0,1,5,6],
+}
+
+//s block
+const sTetro = {
+    chartreuse: [
+        [4,5,13,14],
+        [4,14,15,25],
+        [14,15,23,24],
+        [3,13,14,24]
+    ],
+    nextDisplay: [1,2,4,5],
+}
+const allTetros = [squareTetro, straightTetro, reverseLTetro, lTetro, tTetro, zTetro, sTetro];
 
 //initiating game
 let score = 0;
