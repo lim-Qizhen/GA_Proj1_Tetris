@@ -374,24 +374,28 @@ function quickDrop() {
 
 
 //keyboard controls
+//document.addEventListener("keydown", (e) => console.log(e.code))
+
 document.addEventListener("keydown", function (e) {
-  switch (e.keyCode) {
-    case 37: //left arrow
+  switch (e.code) {
+    case "ArrowLeft": //left arrow
       tetroMove("left");
       break;
-    case 39: //right arrow
+    case "ArrowRight": //right arrow
       tetroMove("right");
       break;
-    // case 40: //down arrow
+    // case "ArrowDown": //down arrow
     //   timer = 50;
     //   break;
-    case 32: //space bar
+    case "Space": //space bar
       e.preventDefault();
       console.log("Space bar is pressed.");
-      // quickDrop();
+      quickDrop();
       break;
   }
 });
+
+
 
 // document.addEventListener("keypress", function(e){
 //   switch(e.keyCode){
