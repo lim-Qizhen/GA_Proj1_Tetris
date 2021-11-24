@@ -83,14 +83,18 @@ const allTetros = [squareTetro, verticalStraightTetro, horizontalStraightTetro];
 //initiating game
 let score = 0;
 document.querySelector("#current-score").innerHTML = `${score}`;
-let nextTetro = JSON.parse(JSON.stringify(verticalStraightTetro));
-let currentTetro = JSON.parse(JSON.stringify(squareTetro));
+let nextTetro = JSON.parse(
+  JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
+);
+let currentTetro = JSON.parse(
+  JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
+);
 let timer = 1000;
 let lines = 0;
 document.querySelector("#current-lines").innerHTML = `${lines}`;
 let level = 0;
 document.querySelector("#current-level").innerHTML = `${level}`;
-
+//levels reached for lines cleared
 const possibleLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 const linesRequired = [10]; // element 1 is lines required to be level 1
 for (let i = 1; i < possibleLevels.length; i++) {
@@ -103,7 +107,7 @@ function oneFallingBlock() {
   //initiate the game starting
   printTetro(); //includes checking
   printNextTetro();
-  showFurthest();
+  showFurthest(findFurthestPosition());
 
   //game
   const tileDropTimer = setInterval(tetroFreeze, timer);
@@ -151,7 +155,7 @@ function printTetro() {
     location.reload(); //refreshes the html and resets variables
     return;
   } else {
-    console.log("okay!");
+    console.log("another block!");
     positions.forEach(
       (position) =>
         (gameBoardSquares[position].style.backgroundColor =
@@ -262,7 +266,7 @@ function tetroMove(direction) {
       Object.values(currentTetro)[0][0][i] + shift;
   }
   //recolour
-  showFurthest();
+  showFurthest(findFurthestPosition());
   Object.values(currentTetro)[0][0].forEach(
     (position) =>
       (gameBoardSquares[position].style.backgroundColor =
@@ -310,65 +314,71 @@ function checkLevel() {
   }
 }
 
-function showFurthest() {
-  let positions = [...Object.values(currentTetro)[0][0]];
-  for (let i = 19; i >= 1; i--) {
-    //create furthest possible block
-    let lowestPossiblePosition = [];
-    for (let j = 0; j < positions.length; j++) {
-      lowestPossiblePosition.push(positions[j] + i * 10);
+function findFurthestPosition(){
+  let currentPositions = [...Object.values(currentTetro)[0][0]];
+  let nextPossiblePosition = [];
+  for(let i = 1; i<=19; i++){
+    nextPossiblePosition = [];
+    for(let j = 0; j<currentPositions.length; j++){//generate new positions
+      nextPossiblePosition.push(currentPositions[j] + 10);
     }
-    //check if furthest possible block is within board
-    if (lowestPossiblePosition.every((position) => position < 200)) {
-      if (
-        lowestPossiblePosition.every(
-          (position) =>
-            gameBoardSquares[position].style.backgroundColor === "black"
-        )
-      ) {
-        //reset border colours
-        for (let i = 0; i <= 199; i++) {
-          gameBoardSquares[i].style.border = "0.5px solid grey";
-        }
-        lowestPossiblePosition.forEach(
-          (position) =>
-            (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)}`)
-        );
-        return;
+    let newSpots = [];
+    for (let k = 0; k< nextPossiblePosition.length; k++){
+      if(currentPositions.indexOf(nextPossiblePosition[k]) === -1){
+        newSpots.push(nextPossiblePosition[k]);
       }
     }
+      if (newSpots.every((position) => position < 200)){
+        if(newSpots.every((position) =>
+            gameBoardSquares[position].style.backgroundColor === "black")){
+              currentPositions = [...nextPossiblePosition]; 
+            } else{
+              return nextPossiblePosition = [...currentPositions]
+            }
+      } else{
+        return nextPossiblePosition = [...currentPositions]
+      }
   }
+  return nextPossiblePosition;
 }
 
-function quickDrop() {
-  let positions = [...Object.values(currentTetro)[0][0]];
-  for (let i = 19; i >= 1; i--) {
-    //create furthest possible block
-    let lowestPossiblePosition = [];
-    for (let j = 0; j < positions.length; j++) {
-      lowestPossiblePosition.push(positions[j] + i * 10);
+function showFurthest(furthestPosition){
+  //reset border colours
+    for (let i = 0; i <= 199; i++) {
+      gameBoardSquares[i].style.border = "0.5px solid grey";
     }
-    //check if furthest possible block is within board
-    if (lowestPossiblePosition.every((position) => position < 200)) {
-      if (
-        lowestPossiblePosition.every(
-          (position) =>
-            gameBoardSquares[position].style.backgroundColor === "black"
-        )
-      ) {
-        // reset current square colours
-        for (const currentPosition of positions) {
-          gameBoardSquares[currentPosition].style.backgroundColor = "black";
-        }
-        Object.values(currentTetro)[0][0] = [...lowestPossiblePosition];
-        for (const newPosition of Object.values(currentTetro)[0][0]) {
-          gameBoardSquares[newPosition].style.backgroundColor = `${Object.keys(currentTetro)}`;
-        }
-        return;
-      }
-    }
-  }
+    furthestPosition.forEach(
+                (position) =>
+                  (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)}`)
+              );
+              return;
 }
+
+function quickDrop(furthestPosition){
+  let positions = [...Object.values(currentTetro)[0][0]];
+  // reset current square colours
+  for (const currentPosition of positions) {
+    gameBoardSquares[currentPosition].style.backgroundColor = "black";
+  }
+  Object.values(currentTetro)[0][0] = [...furthestPosition];
+  for (const newPosition of Object.values(currentTetro)[0][0]) {
+    // console.log(newPosition)
+    gameBoardSquares[newPosition].style.backgroundColor = `${Object.keys(currentTetro)}`;
+  }
+  currentTetro = JSON.parse(JSON.stringify(nextTetro));
+  nextTetro = JSON.parse(
+    JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
+  );
+  resetNextTile();
+  countScore();
+  checkLevel();
+  timer = 1000 - level * 50;
+  printTetro();
+  resetNextTile();
+  printNextTetro();
+  showFurthest(findFurthestPosition());
+  return;
+};
 
 //event Listeners
 
@@ -389,13 +399,10 @@ document.addEventListener("keydown", function (e) {
     //   break;
     case "Space": //space bar
       e.preventDefault();
-      console.log("Space bar is pressed.");
-      quickDrop();
+      quickDrop(findFurthestPosition());
       break;
   }
 });
-
-
 
 // document.addEventListener("keypress", function(e){
 //   switch(e.keyCode){
