@@ -80,9 +80,9 @@ const straightTetro = {
   nextDisplay: [0,1,2,3],
 };
 
-//reverse L
+//reverse L blue 
 const reverseLTetro = {
-    blue: [
+    deepskyblue: [
         [3,13,14,15],
         [4,5,14,24],
         [13,14,15,25],
@@ -91,7 +91,7 @@ const reverseLTetro = {
     nextDisplay: [0,4,5,6],
 }
 
-//L block
+//L block orange
 const lTetro = {
     orange: [
         [5,13,14,15],
@@ -102,9 +102,9 @@ const lTetro = {
     nextDisplay: [3,5,6,7],
 }
 
-//t block
+//t block purple
 const tTetro = {
-    blueviolet: [
+    plum: [
         [4,13,14,15],
         [4,14,15,24],
         [13,14,15,24],
@@ -115,7 +115,7 @@ const tTetro = {
 
 //z block
 const zTetro = {
-    red: [
+    indianred: [
         [3,4,14,15],
         [5,14,15,24],
         [13,14,24,25],
@@ -124,9 +124,9 @@ const zTetro = {
     nextDisplay: [0,1,5,6],
 }
 
-//s block
+//s block green
 const sTetro = {
-    chartreuse: [
+    palegreen: [
         [4,5,13,14],
         [4,14,15,25],
         [14,15,23,24],
@@ -217,7 +217,6 @@ function printTetro() {
     location.reload(); //refreshes the html and resets variables
     return;
   } else {
-    console.log("another block!");
     positions.forEach(
       (position) =>
         (gameBoardSquares[position].style.backgroundColor =
@@ -409,12 +408,16 @@ function showFurthest(furthestPosition){
   //reset border colours
     for (let i = 0; i <= 199; i++) {
       gameBoardSquares[i].style.border = "0.5px solid grey";
+      gameBoardSquares[i].style.opacity = "1";
     }
-    furthestPosition.forEach(
-                (position) =>
-                  (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)[0]}`)
-              );
-              return;
+    // furthestPosition.forEach(
+                // (position) =>
+                //   (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)[0]}`)
+    //               (gameBoardSquares[position].style.backgroundColor = `${Object.keys(currentTetro)[0]}`)
+    //           );
+    furthestPosition.forEach((position) =>(gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)[0]}`));
+    furthestPosition.forEach((position) =>(gameBoardSquares[position].style.opacity = "0.8"));
+    return;
 }
 
 function quickDrop(furthestPosition){
