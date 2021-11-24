@@ -62,8 +62,11 @@ const nextBoardSquares = document.querySelectorAll(".next-board-square");
 const squareTetro = {
   yellow: [
     [4, 5, 14, 15],
-    [1, 2, 5, 6],
+    [4,5,14,15,],
+    [4,5,14,15,],
+    [4,5,14,15,]
   ],
+  nextDisplay: [1,2,5,6]
 };
 //vertical straight block
 const verticalStraightTetro = {
@@ -76,10 +79,13 @@ const verticalStraightTetro = {
 const horizontalStraightTetro = {
   cyan: [
     [13, 14, 15, 16],
-    [0, 1, 2, 3],
+    [5,15,25,35],
+    [23,24,25,26],
+    [4,14,24,34]
   ],
+  nextDisplay: [0,1,2,3],
 };
-const allTetros = [squareTetro, verticalStraightTetro, horizontalStraightTetro];
+const allTetros = [squareTetro, horizontalStraightTetro];
 
 //initiating game
 let score = 0;
@@ -90,6 +96,7 @@ let nextTetro = JSON.parse(
 let currentTetro = JSON.parse(
   JSON.stringify(allTetros[Math.floor(Math.random() * allTetros.length)])
 );
+let rotation =0;
 let timer = 1000;
 let lines = 0;
 document.querySelector("#current-lines").innerHTML = `${lines}`;
@@ -135,11 +142,12 @@ function oneFallingBlock() {
       for (let i = 0; i < Object.values(currentTetro)[0][0].length; i++) {
         Object.values(currentTetro)[0][0][i] += 10;
       }
+      tetroRotate()
       //recolour
       Object.values(currentTetro)[0][0].forEach(
         (position) =>
           (gameBoardSquares[position].style.backgroundColor =
-            Object.keys(currentTetro))
+            Object.keys(currentTetro)[0])
       );
     }
   }
@@ -160,7 +168,7 @@ function printTetro() {
     positions.forEach(
       (position) =>
         (gameBoardSquares[position].style.backgroundColor =
-          Object.keys(currentTetro))
+          Object.keys(currentTetro)[0])
     );
   }
 }
@@ -189,11 +197,11 @@ function tetroStop() {
 }
 
 function printNextTetro() {
-  let positions = [...Object.values(nextTetro)[0][1]];
+  let positions = [...Object.values(nextTetro)[1]];
   positions.forEach(
     (position) =>
       (nextBoardSquares[position].style.backgroundColor =
-        Object.keys(nextTetro))
+        Object.keys(nextTetro)[0])
   );
   positions.forEach(
     (position) => (nextBoardSquares[position].style.border = "0.5px solid grey")
@@ -271,7 +279,7 @@ function tetroMove(direction) {
   Object.values(currentTetro)[0][0].forEach(
     (position) =>
       (gameBoardSquares[position].style.backgroundColor =
-        Object.keys(currentTetro))
+        Object.keys(currentTetro)[0])
   );
 }
 
@@ -350,7 +358,7 @@ function showFurthest(furthestPosition){
     }
     furthestPosition.forEach(
                 (position) =>
-                  (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)}`)
+                  (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)[0]}`)
               );
               return;
 }
@@ -364,7 +372,7 @@ function quickDrop(furthestPosition){
   Object.values(currentTetro)[0][0] = [...furthestPosition];
   for (const newPosition of Object.values(currentTetro)[0][0]) {
     // console.log(newPosition)
-    gameBoardSquares[newPosition].style.backgroundColor = `${Object.keys(currentTetro)}`;
+    gameBoardSquares[newPosition].style.backgroundColor = `${Object.keys(currentTetro)[0]}`;
   }
   currentTetro = JSON.parse(JSON.stringify(nextTetro));
   nextTetro = JSON.parse(
@@ -380,6 +388,38 @@ function quickDrop(furthestPosition){
   showFurthest(findFurthestPosition());
   return;
 };
+
+function tetroRotate(){
+    //gets all positions
+    let positions = [...Object.values(currentTetro)[0]]; 
+    // console.log(allTetros.filter((array) => Object.keys(array)[0] === `${Object.keys(currentTetro)[0]}`)[0][`${Object.keys(currentTetro)[0]}`][0]);
+    const originalPosition = allTetros.filter((array) => Object.keys(array)[0] === `${Object.keys(currentTetro)[0]}`)[0][`${Object.keys(currentTetro)[0]}`][0];
+    const distanceMoved = [];
+    //find how much the block has moved from original
+    for(let i =0; i<originalPosition.length; i++){
+        distanceMoved.push(positions[rotation][i] - originalPosition[i])
+    }
+    let rotatedPosition = [];
+    for(let j = 0; j < distanceMoved.length; j++){
+        rotatedPosition.push(distanceMoved[j] + positions[rotation + 1][j])
+    }
+    if(rotatedPosition.every((position) => position < 200)){
+        if(rotatedPosition.every((position) => gameBoardSquares[position].style.backgroundColor === "black")){
+            //uncolour
+            Object.values(currentTetro)[0][rotation].forEach((position) => gameBoardSquares[position].style.backgroundColor = "black");
+            //rotate
+            rotation ++;
+            Object.values(currentTetro)[0][rotation] = [...rotatedPosition];
+            //colour new
+            Object.values(currentTetro)[0][rotation].forEach((position) => gameBoardSquares[position].style.backgroundColor = `${Object.keys(currentTetro)[0]}`);
+        }else{
+            return;
+        }
+    } else{
+        return;
+    }
+
+}
 
 //event Listeners
 
