@@ -20,8 +20,17 @@ yellow: [
 nextDisplay: [1,2,5,6]
 };
 
-const allTetros = [squareTetro, horizontalStraightTetro];
-  
-//   console.log(Object.values(horizontalStraightTetro)[1])
-console.log(allTetros.filter((array) => Object.keys(array)[0] === "yellow")[0]["yellow"])
-console.log(Object.values(squareTetro)[0])
+// const allTetros = [squareTetro, horizontalStraightTetro];
+// const rotation = 0;
+
+// console.log(typeof Object.values(squareTetro)[0][0][0])
+
+// console.log(Object.values(squareTetro)[0])
+//       for (let i = 0; i < Object.values(squareTetro)[0].length; i++) {
+//           for (let j = 0; j < Object.values(squareTetro)[0][0].length; j++){
+//               Object.values(squareTetro)[0][i][j] += 10;
+//           }
+//       };
+//       console.log(Object.values(squareTetro)[0])
+let array = [];
+console.log(array.length === 0)
