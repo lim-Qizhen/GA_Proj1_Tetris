@@ -85,7 +85,7 @@ let score = 0;
 document.querySelector("#current-score").innerHTML = `${score}`;
 let nextTetro = JSON.parse(JSON.stringify(verticalStraightTetro));
 let currentTetro = JSON.parse(JSON.stringify(squareTetro));
-let timer = 70;
+let timer = 1000;
 let lines = 0;
 document.querySelector("#current-lines").innerHTML = `${lines}`;
 let level = 0;
@@ -117,8 +117,7 @@ function oneFallingBlock() {
       resetNextTile();
       countScore();
       checkLevel();
-      // timer = 1000 - level * 50;
-      console.log("Block");
+      timer = 1000 - level * 50;
       oneFallingBlock();
     } else {
       //move block down visually
@@ -148,7 +147,7 @@ function printTetro() {
       (position) => gameBoardSquares[position].style.backgroundColor !== "black"
     )
   ) {
-    window.alert("GAME OVER. \nRESTART GAME.");
+    window.alert("Game over. \nRESTART GAME.");
     location.reload(); //refreshes the html and resets variables
     return;
   } else {
@@ -333,7 +332,7 @@ function showFurthest() {
         }
         lowestPossiblePosition.forEach(
           (position) =>
-            (gameBoardSquares[position].style.border = "0.5px solid blue")
+            (gameBoardSquares[position].style.border = `0.5px solid ${Object.keys(currentTetro)}`)
         );
         return;
       }
@@ -357,11 +356,14 @@ function quickDrop() {
             gameBoardSquares[position].style.backgroundColor === "black"
         )
       ) {
-        //reset border colours
-        for (const currentPosition of positions){
+        // reset current square colours
+        for (const currentPosition of positions) {
           gameBoardSquares[currentPosition].style.backgroundColor = "black";
         }
         Object.values(currentTetro)[0][0] = [...lowestPossiblePosition];
+        for (const newPosition of Object.values(currentTetro)[0][0]) {
+          gameBoardSquares[newPosition].style.backgroundColor = `${Object.keys(currentTetro)}`;
+        }
         return;
       }
     }
@@ -369,6 +371,8 @@ function quickDrop() {
 }
 
 //event Listeners
+
+
 //keyboard controls
 document.addEventListener("keydown", function (e) {
   switch (e.keyCode) {
@@ -382,8 +386,9 @@ document.addEventListener("keydown", function (e) {
     //   timer = 50;
     //   break;
     case 32: //space bar
+      e.preventDefault();
       console.log("Space bar is pressed.");
-      quickDrop();
+      // quickDrop();
       break;
   }
 });
