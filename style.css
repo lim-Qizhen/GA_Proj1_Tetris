@@ -35,6 +35,7 @@ h4{
 #game-area{
     position: relative;
     display: flex;
+    justify-content: center;
 }
 
 #board{
@@ -45,7 +46,14 @@ h4{
 
 .board-row{
     min-width: none;
-
     display: flex;
     margin: auto;
+}
+
+/* #next-tile{
+    margin-left: 10px;
+} */
+
+#board{
+    margin: 0;
 }

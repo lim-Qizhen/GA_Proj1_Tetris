@@ -21,6 +21,8 @@ function newBoard() {
       square.setAttribute("id", `square-${(i - 1) * 10 + j - 1}`);
       square.style.fontSize = 0;
       boardRow.append(square);
+      // square.style.fontSize = "10px";
+      // square.style.color = "white";
     }
     fullBoard.append(boardRow);
   }
@@ -230,7 +232,7 @@ function tetroStop() {
       newSpots.push(nextSpot);
     }
   }
-  if (nextPositions[3] >= 200) {
+  if (nextPositions.some((position) => position >= 200)) {
     //reached the end (true indicates stop)
     return true;
   }
@@ -259,23 +261,22 @@ function resetNextTile() {
   }
 }
 
-function tetroMoveDown(){
+function tetroMoveDown() {
   Object.values(currentTetro)[0][rotation % 4].forEach(
-        (position) =>
-          (gameBoardSquares[position].style.backgroundColor = "black")
-      );
-      //lower tetro (all positions)
-      for (let i = 0; i < Object.values(currentTetro)[0].length; i++) {
-        for (let j = 0; j < Object.values(currentTetro)[0][i].length; j++) {
-          Object.values(currentTetro)[0][i][j] += 10;
-        }
-      }
-      //recolour
-      Object.values(currentTetro)[0][rotation % 4].forEach(
-        (position) =>
-          (gameBoardSquares[position].style.backgroundColor =
-            Object.keys(currentTetro)[0])
-      );
+    (position) => (gameBoardSquares[position].style.backgroundColor = "black")
+  );
+  //lower tetro (all positions)
+  for (let i = 0; i < Object.values(currentTetro)[0].length; i++) {
+    for (let j = 0; j < Object.values(currentTetro)[0][i].length; j++) {
+      Object.values(currentTetro)[0][i][j] += 10;
+    }
+  }
+  //recolour
+  Object.values(currentTetro)[0][rotation % 4].forEach(
+    (position) =>
+      (gameBoardSquares[position].style.backgroundColor =
+        Object.keys(currentTetro)[0])
+  );
 }
 
 function checkSidePositions(moveSpaces) {
@@ -495,50 +496,68 @@ function tetroRotate() {
     return;
   } else if (newSpots.length === 0) {
     return;
-  } 
+  }
 
   //to prevent block breaking up
-  let columnPosition = []
-  for (let i = 0; i < Object.values(currentTetro)[0][(rotation+1) % 4].length; i++){
-    columnPosition.push(rotatedPosition[i] % 10);
+  let columnPosition = []; //current column positions
+  for (
+    let i = 0;
+    i < Object.values(currentTetro)[0][rotation % 4].length;
+    i++
+  ) {
+    columnPosition.push(positions[rotation % 4][i] % 10);
   }
-  let checkIfBlockBreaks = [];
-  for(let i = 0; i < columnPosition.length;i++){
-    checkIfBlockBreaks.push(columnPosition[(i+1)%4]-columnPosition[(i)%4])
+  let newColumnPosition = [];
+  for (
+    let i = 0;
+    i < Object.values(currentTetro)[0][(rotation + 1) % 4].length;
+    i++
+  ) {
+    newColumnPosition.push(rotatedPosition[i] % 10);
   }
-
-  if(columnPosition.some((position) => position === 0)){ //block at left
-    console.log(rotatedPosition)
-    console.log(checkIfBlockBreaks)
-    for (let move = 1; move <=2 ; move ++){
-      if (checkIfBlockBreaks.some((difference) => difference > 3)){
-        for (let i = 0; i <rotatedPosition.length; i++){
-          rotatedPosition[i] ++
-        }
-        console.log(Object.values(currentTetro)[0][(rotation+1) % 4])
-        console.log(rotatedPosition)
-        columnPosition = []
-        for (let i = 0; i < rotatedPosition.length; i++){
-          columnPosition.push(rotatedPosition[i] % 10);
-        }
-        console.log(columnPosition)
-        checkIfBlockBreaks = [];
-        for(let i = 0; i < columnPosition.length;i++){
-          checkIfBlockBreaks.push(columnPosition[(i+1)%4]-columnPosition[(i)%4])
-        }
-        console.log(checkIfBlockBreaks.some((difference) => difference > 3))
-        console.log(checkIfBlockBreaks)
-      } 
+  let adjustment = 0;
+  if ((columnPosition.some((current) => current === 0)) || (Object.keys(currentTetro)[0] === "cyan" && columnPosition.some((current) => current === 1))) { //left 
+    while (newColumnPosition.some((rotated) => rotated > 3)) {
+      for (let i = 0; i < rotatedPosition.length; i++) {
+        rotatedPosition[i]++;
+        console.log("right shifted once");
+      }
+      adjustment++;
+      newColumnPosition = [];
+      for (
+        let i = 0;
+        i < Object.values(currentTetro)[0][(rotation + 1) % 4].length;
+        i++
+      ) {
+        newColumnPosition.push(rotatedPosition[i] % 10);
+      }
     }
   }
-  
+
+  if ((columnPosition.some((current) => current === 9)) || (Object.keys(currentTetro)[0] === "cyan" && columnPosition.some((current) => current === 8))) { //right
+    while (newColumnPosition.some((rotated) => rotated < 6)) {
+      for (let i = 0; i < rotatedPosition.length; i++) {
+        rotatedPosition[i]--;
+        console.log("left shifted once");
+      }
+      adjustment--;
+      newColumnPosition = [];
+      for (
+        let i = 0;
+        i < Object.values(currentTetro)[0][(rotation + 1) % 4].length;
+        i++
+      ) {
+        newColumnPosition.push(rotatedPosition[i] % 10);
+      }
+    }
+  }
+
   //uncolour
   Object.values(currentTetro)[0][rotation % 4].forEach(
     (position) => (gameBoardSquares[position].style.backgroundColor = "black")
   );
   //rotate
   rotation++;
-  console.log(rotatedPosition)
   Object.values(currentTetro)[0][rotation % 4] = [...rotatedPosition];
   //colour new
   Object.values(currentTetro)[0][rotation % 4].forEach(
@@ -548,6 +567,14 @@ function tetroRotate() {
   );
 
   showFurthest(findFurthestPosition());
+  for (
+    let i = 0;
+    i < Object.values(currentTetro)[0][rotation % 4].length;
+    i++
+  ) {
+    Object.values(currentTetro)[0][rotation % 4][i] - adjustment;
+    console.log(`shift back by ${-adjustment}`);
+  }
 }
 
 //event Listeners
@@ -563,7 +590,7 @@ document.addEventListener("keydown", function (e) {
       break;
     case "ArrowDown": //down arrow
       timer = 50;
-      if (!tetroStop()){
+      if (!tetroStop()) {
         tetroMoveDown();
       }
       timer = oldTimer;
