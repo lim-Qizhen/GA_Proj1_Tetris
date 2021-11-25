@@ -483,15 +483,6 @@ function tetroRotate() {
       newSpots.push(rotatedPosition[i]);
     }
   }
-  //to check if block breaks up
-  let checkIfBlockBreaks = [];
-  let columnPosition = []
-  for (let i = 0; i < Object.values(currentTetro)[0][(rotation+1) % 4].length; i++){
-    columnPosition.push(Object.values(currentTetro)[0][(rotation+1) % 4][i] % 10);
-  }
-  for(let i = 0; i < columnPosition.length;i++){
-    checkIfBlockBreaks.push(columnPosition[(i+1)%4]-columnPosition[(i)%4])
-  }
 
   //checks
   if (newSpots.some((position) => position >= 200)) {
@@ -504,8 +495,41 @@ function tetroRotate() {
     return;
   } else if (newSpots.length === 0) {
     return;
-  } else if (checkIfBlockBreaks.some((difference) => difference > 5)){
-    return;
+  } 
+
+  //to prevent block breaking up
+  let columnPosition = []
+  for (let i = 0; i < Object.values(currentTetro)[0][(rotation+1) % 4].length; i++){
+    columnPosition.push(rotatedPosition[i] % 10);
+  }
+  let checkIfBlockBreaks = [];
+  for(let i = 0; i < columnPosition.length;i++){
+    checkIfBlockBreaks.push(columnPosition[(i+1)%4]-columnPosition[(i)%4])
+  }
+
+  if(columnPosition.some((position) => position === 0)){ //block at left
+    console.log(rotatedPosition)
+    console.log(checkIfBlockBreaks)
+    for (let move = 1; move <=2 ; move ++){
+      if (checkIfBlockBreaks.some((difference) => difference > 3)){
+        for (let i = 0; i <rotatedPosition.length; i++){
+          rotatedPosition[i] ++
+        }
+        console.log(Object.values(currentTetro)[0][(rotation+1) % 4])
+        console.log(rotatedPosition)
+        columnPosition = []
+        for (let i = 0; i < rotatedPosition.length; i++){
+          columnPosition.push(rotatedPosition[i] % 10);
+        }
+        console.log(columnPosition)
+        checkIfBlockBreaks = [];
+        for(let i = 0; i < columnPosition.length;i++){
+          checkIfBlockBreaks.push(columnPosition[(i+1)%4]-columnPosition[(i)%4])
+        }
+        console.log(checkIfBlockBreaks.some((difference) => difference > 3))
+        console.log(checkIfBlockBreaks)
+      } 
+    }
   }
   
   //uncolour
@@ -514,8 +538,8 @@ function tetroRotate() {
   );
   //rotate
   rotation++;
+  console.log(rotatedPosition)
   Object.values(currentTetro)[0][rotation % 4] = [...rotatedPosition];
-  console.log(Object.values(currentTetro)[0][rotation % 4])
   //colour new
   Object.values(currentTetro)[0][rotation % 4].forEach(
     (position) =>
