@@ -20,4 +20,7 @@ yellow: [
 nextDisplay: [1,2,5,6]
 };
 
-console.log(parseColor('red'))
+// console.log(parseColor('red'))
+
+const a = 6 > 5;
+console.log(!a)
