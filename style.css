@@ -50,10 +50,14 @@ h4{
     margin: auto;
 }
 
-/* #next-tile{
+#next-tile{
     margin-left: 10px;
-} */
+}
 
 #board{
     margin: 0;
+}
+
+#hold-tile{
+    margin-right: 120px;
 }

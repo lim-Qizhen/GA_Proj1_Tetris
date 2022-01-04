@@ -21,8 +21,6 @@ function newBoard() {
       square.setAttribute("id", `square-${(i - 1) * 10 + j - 1}`);
       square.style.fontSize = 0;
       boardRow.append(square);
-      // square.style.fontSize = "10px";
-      // square.style.color = "white";
     }
     fullBoard.append(boardRow);
   }
@@ -516,11 +514,16 @@ function tetroRotate() {
     newColumnPosition.push(rotatedPosition[i] % 10);
   }
   let adjustment = 0;
-  if ((columnPosition.some((current) => current === 0)) || (Object.keys(currentTetro)[0] === "cyan" && columnPosition.some((current) => current === 1))) { //left 
+  if (
+    columnPosition.some((current) => current === 0) ||
+    (Object.keys(currentTetro)[0] === "cyan" &&
+      columnPosition.some((current) => current === 1))
+  ) {
+    //left
     while (newColumnPosition.some((rotated) => rotated > 3)) {
       for (let i = 0; i < rotatedPosition.length; i++) {
         rotatedPosition[i]++;
-        console.log("right shifted once");
+        // console.log("right shifted once");
       }
       adjustment++;
       newColumnPosition = [];
@@ -534,11 +537,16 @@ function tetroRotate() {
     }
   }
 
-  if ((columnPosition.some((current) => current === 9)) || (Object.keys(currentTetro)[0] === "cyan" && columnPosition.some((current) => current === 8))) { //right
+  if (
+    columnPosition.some((current) => current === 9) ||
+    (Object.keys(currentTetro)[0] === "cyan" &&
+      columnPosition.some((current) => current === 8))
+  ) {
+    //right
     while (newColumnPosition.some((rotated) => rotated < 6)) {
       for (let i = 0; i < rotatedPosition.length; i++) {
         rotatedPosition[i]--;
-        console.log("left shifted once");
+        // console.log("left shifted once");
       }
       adjustment--;
       newColumnPosition = [];
@@ -573,7 +581,7 @@ function tetroRotate() {
     i++
   ) {
     Object.values(currentTetro)[0][rotation % 4][i] - adjustment;
-    console.log(`shift back by ${-adjustment}`);
+    // console.log(`shift back by ${-adjustment}`);
   }
 }
 
